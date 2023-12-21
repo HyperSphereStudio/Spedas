@@ -1,0 +1,155 @@
+; Figure 1, Characteristics of KH Waves as Observed by the MMS
+; Summary Plot 1, GSM frame
+; 
+; ; Set time range of interest
+
+date_time_start = '2015-10-16/05:00'
+date_time_end = '2015-10-16/16:00'
+hours=11
+
+
+tr = [date_time_start,date_time_end]
+
+
+timespan,date_time_start,hours,/hours
+
+; set details of data to be retrieved
+probe = '2'
+datatype = ['des-moms', 'dis-moms']
+level = 'l2'
+fgm_datarate = 'srvy'
+datarate = 'fast'
+coords='gsm'
+
+
+; load FGM data
+mms_load_fgm, trange=tr, probes=probe, level=level, data_rate=fgm_datarate, /time_clip, /get_fgm_ephemeris
+
+; load FPI data
+mms_load_fpi, trange=tr, probes=probe, datatype=datatype, level = level, data_rate=datarate, /time_clip
+
+; load EDP data
+;mms_load_edp, trange=tr, probes=probe, level = level, data_rate=datarate, /time_clip
+
+
+; Interpolate all necessary data to FGM cadence
+tinterpol, 'mms'+probe+'_dis_numberdensity_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_dis_numberdensity_'+fgm_datarate
+tinterpol, 'mms'+probe+'_des_numberdensity_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_des_numberdensity_'+fgm_datarate
+tinterpol, 'mms'+probe+'_dis_temppara_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_dis_temppara_'+fgm_datarate
+tinterpol, 'mms'+probe+'_dis_tempperp_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_dis_tempperp_'+fgm_datarate
+tinterpol, 'mms'+probe+'_des_temppara_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_des_temppara_'+fgm_datarate
+tinterpol, 'mms'+probe+'_des_tempperp_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_des_tempperp_'+fgm_datarate
+tinterpol, 'mms'+probe+'_edp_dce_'+coords+'_'+datarate+'_l2', 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_edp_dce_'+coords+'_'+fgm_datarate+'_l2'
+tinterpol, 'mms'+probe+'_dis_bulkv_gse_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_dis_bulkv_gse_'+fgm_datarate
+tinterpol, 'mms'+probe+'_des_bulkv_gse_'+datarate, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_des_bulkv_gse_'+fgm_datarate
+
+
+; Rotate velocity data to GSM coordinates
+mms_cotrans, 'mms'+probe+'_dis_bulkv_gse_'+fgm_datarate, 'mms'+probe+'_dis_bulkv_'+coords+'_'+fgm_datarate, in_coord='gse', out_coord=coords
+
+; Calculate average temperatures
+add_data, 'mms'+probe+'_dis_tempperp_'+fgm_datarate, 'mms'+probe+'_dis_tempperp_'+fgm_datarate, newname='mms'+probe+'_dis_2tperp_'+fgm_datarate
+add_data, 'mms'+probe+'_dis_temppara_'+fgm_datarate, 'mms'+probe+'_dis_2tperp_'+fgm_datarate, newname='mms'+probe+'_dis_tempavg_'+fgm_datarate
+get_data, 'mms'+probe+'_dis_tempavg_'+fgm_datarate, data=Tiavg
+Tiavg.y = Tiavg.y/3.
+store_data, 'mms'+probe+'_dis_tempavg_'+fgm_datarate, data=Tiavg
+
+add_data, 'mms'+probe+'_des_tempperp_'+fgm_datarate, 'mms'+probe+'_des_tempperp_'+fgm_datarate, newname='mms'+probe+'_des_2tperp_'+fgm_datarate
+add_data, 'mms'+probe+'_des_temppara_'+fgm_datarate, 'mms'+probe+'_des_2tperp_'+fgm_datarate, newname='mms'+probe+'_des_tempavg_'+fgm_datarate
+get_data, 'mms'+probe+'_des_tempavg_'+fgm_datarate, data=Teavg
+Teavg.y = Teavg.y/3.
+store_data, 'mms'+probe+'_des_tempavg_'+fgm_datarate, data=Teavg
+
+div_data, 'mms'+probe+'_dis_tempavg_'+fgm_datarate, 'mms'+probe+'_des_tempavg_'+fgm_datarate, newname='mms'+probe+'_tempratio_'+fgm_datarate
+
+; Calculate magnetic, plasma, total pressures
+mult_data, 'mms'+probe+'_dis_tempavg_'+fgm_datarate, 'mms'+probe+'_dis_numberdensity_'+fgm_datarate, newname='mms'+probe+'_ion_plasma_pressure_'+fgm_datarate
+get_data, 'mms'+probe+'_ion_plasma_pressure_'+fgm_datarate, data=ion_plas_pressure
+ion_plas_pressure.y = ion_plas_pressure.y*!const.e*10.^15
+store_data, 'mms'+probe+'_ion_plasma_pressure_'+fgm_datarate, data=ion_plas_pressure
+
+mult_data, 'mms'+probe+'_des_tempavg_'+fgm_datarate, 'mms'+probe+'_des_numberdensity_'+fgm_datarate, newname='mms'+probe+'_electron_plasma_pressure_'+fgm_datarate
+get_data, 'mms'+probe+'_electron_plasma_pressure_'+fgm_datarate, data=elec_plas_pressure
+elec_plas_pressure.y = elec_plas_pressure.y*!const.e*10.^15
+store_data, 'mms'+probe+'_electron_plasma_pressure_'+fgm_datarate, data=elec_plas_pressure
+
+mult_data, 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', 'mms'+probe+'_fgm_b_'+coords+'_'+fgm_datarate+'_l2_btot', newname='mms'+probe+'_magnetic_pressure_'+fgm_datarate
+get_data, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, data=mag_pressure
+mag_pressure.y = 10.^(-9)*mag_pressure.y/(2*!const.mu0)
+store_data, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, data=mag_pressure
+
+add_data, 'mms'+probe+'_ion_plasma_pressure_'+fgm_datarate, 'mms'+probe+'_electron_plasma_pressure_'+fgm_datarate, newname='mms'+probe+'_plasma_pressure_'+fgm_datarate
+add_data, 'mms'+probe+'_plasma_pressure_'+fgm_datarate, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, newname='mms'+probe+'_total_pressure_'+fgm_datarate
+
+store_data, 'mms'+probe+'_pressures_'+fgm_datarate, data=['mms'+probe+'_plasma_pressure_'+fgm_datarate,'mms'+probe+'_magnetic_pressure_'+fgm_datarate,'mms'+probe+'_total_pressure_'+fgm_datarate]
+
+; Calculate ion and electron plasma betas
+div_data, 'mms'+probe+'_ion_plasma_pressure_'+fgm_datarate, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, newname='mms'+probe+'_ion_beta_'+fgm_datarate
+div_data, 'mms'+probe+'_electron_plasma_pressure_'+fgm_datarate, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, newname='mms'+probe+'_electron_beta_'+fgm_datarate
+
+; Convert location data to RE
+get_data, 'mms'+probe+'_fgm_r_'+coords+'_'+fgm_datarate+'_l2', data=xyz_km
+xyz_re = xyz_km
+xyz_re.y = xyz_km.y/(R_earth*0.001)
+store_data, 'mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate, data=xyz_re
+split_vec, 'mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate
+options, 'mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_0', ytitle = 'Xgsm'
+options, 'mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_1', ytitle = 'Ygsm'
+options, 'mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_2', ytitle = 'Zgsm'
+
+
+Ionspec = 'mms'+probe+'_dis_energyspectr_omni_'+datarate
+BGSM = 'mms'+probe+'_fgm_b_'+coords+'_srvy_l2'
+VGSM = 'mms'+probe+'_dis_bulkv_'+coords+'_'+fgm_datarate
+IonT = 'mms'+probe+'_dis_tempavg_'+fgm_datarate
+ElecT = 'mms'+probe+'_des_tempavg_'+fgm_datarate
+IonN = 'mms'+probe+'_dis_numberdensity_'+fgm_datarate
+ElecN = 'mms'+probe+'_des_numberdensity_'+fgm_datarate
+IETRat = 'mms'+probe+'_tempratio_'+fgm_datarate
+Pres = 'mms'+probe+'_pressures_'+fgm_datarate
+IonB = 'mms'+probe+'_ion_beta_'+fgm_datarate
+ElecB = 'mms'+probe+'_electron_beta_'+fgm_datarate
+
+options, 'mms'+probe+'_total_pressure_'+fgm_datarate, labels='Total'
+options, 'mms'+probe+'_plasma_pressure_'+fgm_datarate, colors='b'
+options, 'mms'+probe+'_plasma_pressure_'+fgm_datarate, labels='Plasma'
+options, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, colors='r'
+options, 'mms'+probe+'_magnetic_pressure_'+fgm_datarate, labels='Magnetic'
+
+options, Ionspec, ytitle = 'Omnidirectional Ion Energy'
+options, BGSM, ytitle = 'FGM B-Field GSM'
+options, BGSM, ysubtitle = '[nT]'
+options, VGSM, ytitle = 'Ion Velocity GSM'
+options, VGSM, ysubtitle = '[km/s]'
+options, IonT, ytitle = 'Ion Temperature'
+options, IonT, ysubtitle = '[eV]'
+options, IonN, ytitle='Ion Density'
+options, IonN, ysubtitle = '[/cc]'
+options, IonN, ylog=1
+options, ElecT, ytitle = 'Electron Temperature'
+options, ElecT, ysubtitle = '[eV]'
+options, ElecN, ytitle = 'Electron Density'
+options, ElecN, ysubtitle = '[/cc]'
+options, ElecN, ylog=1
+options, IETRat, ytitle = 'Ion/Electron Temp Ratio'
+options, Pres, ytitle = 'Total Pressure'
+options, Pres, ysubtitle = '[nPa]'
+options, IonB, ytitle = 'Ion Plasma Beta'
+options, ElecB, ytitle = 'Electron Plasma Beta'
+
+options, BGSM, labflag=1
+options, VGSM, labflag=1
+options, IonN, labflag=3, labpos=[0]
+options, IonT, labflag=3, labpos=[1]
+options, ElecN, labflag=3, labpos=[4]
+
+tplot_options,'xmargin',[17,13]
+window, 0, xsize=975, ysize=1300
+window, 1, xsize=975, ysize=1300
+;tplot_multiaxis, [Ionspec,BGSM,VGSM,IonT,ElecT,IETRat,Pres,IonB,ElecB],[IonN,ElecN],[4,5], window=0
+
+tplot_multiaxis, [Ionspec,BGSM,VGSM,IonT,Pres],[IonN],[4], window=0
+
+tplot,var_label=['mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_2','mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_1','mms'+probe+'_fgm_RE_'+coords+'_'+fgm_datarate+'_0']
+
+makepng,'MMS_overview_'+string(probe)

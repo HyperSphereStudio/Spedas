@@ -1,0 +1,15 @@
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.csproj.AssemblyReference.cache
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.AssemblyInfoInputs.cache
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.AssemblyInfo.cs
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.csproj.CoreCompileInputs.cache
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\bin\Debug\net8.0\IDLTranscompiler.exe
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\bin\Debug\net8.0\IDLTranscompiler.deps.json
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\bin\Debug\net8.0\IDLTranscompiler.runtimeconfig.json
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\bin\Debug\net8.0\IDLTranscompiler.dll
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\bin\Debug\net8.0\IDLTranscompiler.pdb
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.dll
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\refint\IDLTranscompiler.dll
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.pdb
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\IDLTranscompiler.genruntimeconfig.cache
+C:\Users\JohnB\OneDrive\School\Space Physics\Spedas\IDLTranscompiler\IDLTranscompiler\obj\Debug\net8.0\ref\IDLTranscompiler.dll
